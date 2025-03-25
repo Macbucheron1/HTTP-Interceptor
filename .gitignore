@@ -1,0 +1,27 @@
+# === BUILD FILES ===
+/build/
+/CMakeFiles/
+/CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
+
+# === BINAIRES ===
+*.out
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+*.lib
+/interceptor  # si ton binaire est généré à la racine (adaptable)
+
+# === VS CODE ===
+.vscode/
+
+# === BACKUPS / TEMP FILES ===
+*~
+*.swp
+*.tmp
+*.log
