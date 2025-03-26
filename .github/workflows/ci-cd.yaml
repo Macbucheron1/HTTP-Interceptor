@@ -44,22 +44,23 @@ jobs:
         run: |
           if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
             sudo apt-get update
-            # Installe cmake, g++, clang...
-            # Compiler choisi se fera via la matrix si besoin
             sudo apt-get install -y cmake gcc g++ clang
+
           elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
             brew update
             brew install cmake
-            # brew install llvm # si tu veux clang plus récent
+            # brew install llvm  # si besoin d'un clang plus récent
+
           else
             # windows-latest
             choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' --yes
 
-            # Si on veut MSVC, on l'a déjà dans Visual Studio Build Tools
-            # Si on veut MinGW:
-            if [ "${{ matrix.compiler }}" = "mingw" ]; then
+            # Si on veut MinGW sous Windows
+            if [[ "${{ matrix.compiler }}" == "mingw" ]]; then
               choco install mingw --yes
             fi
+          fi   # <= FERMETURE du if principal, indispensable !
+
 
       # 3) Configurer (CMake) en fonction du compiler sous Windows
       - name: Configure (CMake)
