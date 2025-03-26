@@ -93,4 +93,5 @@ jobs:
       - name: Test
         shell: bash
         run: |
-          c
+          ctest --test-dir build --output-on-failure
+
