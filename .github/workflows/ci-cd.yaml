@@ -41,6 +41,7 @@ jobs:
 
       # 2) Installer dépendances en fonction de l'OS
       - name: Install dependencies
+        shell: bash
         run: |
           if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
             sudo apt-get update
@@ -59,11 +60,11 @@ jobs:
             if [[ "${{ matrix.compiler }}" == "mingw" ]]; then
               choco install mingw --yes
             fi
-          fi   # <= FERMETURE du if principal, indispensable !
-
+          fi
 
       # 3) Configurer (CMake) en fonction du compiler sous Windows
       - name: Configure (CMake)
+        shell: bash
         run: |
           mkdir build
           cd build
@@ -78,14 +79,18 @@ jobs:
 
       # 4) Compiler
       - name: Build
+        shell: bash
         run: |
           if [[ "${{ matrix.os }}" == "windows-latest" && "${{ matrix.compiler }}" == "mingw" ]]; then
+            # MinGW Makefiles
             cmake --build build
           else
+            # Visual Studio or single-config with clang/gcc
             cmake --build build --config ${{ matrix.build_type }}
           fi
 
       # 5) Lancer les tests (unitaires)
       - name: Test
+        shell: bash
         run: |
-          ctest --test-dir build --output-on-failure
+          c
