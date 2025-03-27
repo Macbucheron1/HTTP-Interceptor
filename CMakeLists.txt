@@ -36,7 +36,9 @@ FetchContent_MakeAvailable(Catch2)
 # === Fichiers de tests unitaires ===
 set(TEST_SOURCES
     tests/test_main.cpp  # Contient CATCH_CONFIG_MAIN
-    tests/test_isValidUrl.cpp
+    tests/utils/test_isValidUrl.cpp
+    tests/utils/test_extractHostFromUrl.cpp
+    tests/HttpClient/test_sendRequest.cpp
 )
 
 add_executable(unit_tests

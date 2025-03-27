@@ -56,6 +56,20 @@ namespace Utils {
      */
     std::string sanitizeInput(const std::string& input);
 
+
+    /**
+     * @brief Extrait le chemin (path) depuis une URL.
+     * 
+     * @param url
+     *  Chaîne représentant l'URL (ex: "https://example.com:8080/path").
+     * 
+     * @return
+     * Chaîne correspondant au chemin (ex: "/path").
+     * Retourne une chaîne vide si extraction impossible.
+     */
+    std::string extractPathFromURL(const std::string& url);
+
+
 } // namespace Utils
 
 #endif // UTILS_HPP
