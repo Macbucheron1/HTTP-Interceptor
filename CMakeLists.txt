@@ -18,6 +18,7 @@ set(SOURCES
     src/Utils.cpp
 )
 
+# --- Exécutable principal ---
 add_executable(http-interceptor ${SOURCES})
 
 # === Tests ===
@@ -25,18 +26,16 @@ enable_testing()
 
 # Intégration Catch2 (FetchContent pour portabilité)
 include(FetchContent)
-
 FetchContent_Declare(
   Catch2
   GIT_REPOSITORY https://github.com/catchorg/Catch2.git
   GIT_TAG v3.5.2
 )
-
 FetchContent_MakeAvailable(Catch2)
 
 # === Fichiers de tests unitaires ===
 set(TEST_SOURCES
-    tests/test_main.cpp           # Contient CATCH_CONFIG_MAIN
+    tests/test_main.cpp  # Contient CATCH_CONFIG_MAIN
     tests/test_isValidUrl.cpp
 )
 
@@ -51,7 +50,10 @@ add_executable(unit_tests
 )
 
 target_include_directories(unit_tests PRIVATE include)
-target_link_libraries(unit_tests PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(unit_tests
+    PRIVATE
+        Catch2::Catch2WithMain
+)
 
 include(CTest)
 include(Catch)

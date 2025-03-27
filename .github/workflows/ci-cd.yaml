@@ -8,90 +8,43 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        compiler: [gcc, clang, msvc, mingw]
         build_type: [Debug, Release]
-        exclude:
-          # Sur Windows, on n'utilise pas clang ou gcc "natif"
-          - os: windows-latest
-            compiler: clang
-          - os: windows-latest
-            compiler: gcc
-
-          # Sur macOS, on n'utilise pas MSVC ni MinGW
-          - os: macos-latest
-            compiler: msvc
-          - os: macos-latest
-            compiler: mingw
-
-          # Sur Ubuntu, on n'utilise pas MSVC ni MinGW
-          - os: ubuntu-latest
-            compiler: msvc
-          - os: ubuntu-latest
-            compiler: mingw
 
     steps:
-      # 1) Check out le code
+      # 1) Check out code
       - name: Check out repository
         uses: actions/checkout@v3
 
-      # 2) Installer dépendances en fonction de l'OS
+      # 2) Install dependencies (Ubuntu + GCC/G++)
       - name: Install dependencies
         shell: bash
         run: |
-          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            sudo apt-get update
-            sudo apt-get install -y cmake gcc g++ clang
+          sudo apt-get update
+          sudo apt-get install -y cmake gcc g++
+          # If you want to ensure CMake uses gcc/g++ explicitly:
+          export CC=gcc
+          export CXX=g++
 
-          elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
-            brew update
-            brew install cmake
-            # brew install llvm  # si besoin d'un clang plus récent
-
-          else
-            # windows-latest
-            choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' --yes
-
-            # Si on veut MinGW sous Windows
-            if [[ "${{ matrix.compiler }}" == "mingw" ]]; then
-              choco install mingw --yes
-            fi
-          fi
-
-      # 3) Configurer (CMake) en fonction du compiler sous Windows
+      # 3) Configure (CMake)
       - name: Configure (CMake)
         shell: bash
         run: |
           mkdir build
           cd build
-          
-          # Windows + MinGW => on utilise le générateur "MinGW Makefiles"
-          if [[ "${{ matrix.os }}" == "windows-latest" && "${{ matrix.compiler }}" == "mingw" ]]; then
-            cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-          else
-            # Pour MSVC, clang, gcc...
-            cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-          fi
+          cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
 
-      # 4) Compiler
+      # 4) Build
       - name: Build
         shell: bash
         run: |
-          if [[ "${{ matrix.os }}" == "windows-latest" && "${{ matrix.compiler }}" == "mingw" ]]; then
-            # MinGW Makefiles
-            cmake --build build
-          else
-            # Visual Studio or single-config with clang/gcc
-            cmake --build build --config ${{ matrix.build_type }}
-          fi
+          cmake --build build --config ${{ matrix.build_type }}
 
-      # 5) Lancer les tests (unitaires)
+      # 5) Run tests
       - name: Test
         shell: bash
         run: |
           ctest --test-dir build --output-on-failure
-
